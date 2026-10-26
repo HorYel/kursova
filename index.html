@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Відкрите навчання — прототип модуля</title>
+<style>
+:root{--bg:#fff;--fg:#1a1a1a;--mut:#4a4f57;--pri:#0b4fb3;--prif:#fff;--err:#b00020;--errbg:#fdecef;--ok:#116329;--okbg:#e8f5ec;--bd:#6b7280;--soft:#d5d9e0;--card:#f4f6fa;--focus:#0b4fb3;--fs:100%;--lh:1.6;--ff:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--hf:"Iowan Old Style",Georgia,serif;--ls:0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121212;--fg:#f2f2f2;--mut:#c4c9d1;--pri:#8ab4ff;--prif:#0a0a0a;--err:#ff8a9a;--errbg:#3a1a20;--ok:#7fd99a;--okbg:#14301f;--bd:#9aa1ab;--soft:#3a3f47;--card:#1c1f24;--focus:#fff;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121212;--fg:#f2f2f2;--mut:#c4c9d1;--pri:#8ab4ff;--prif:#0a0a0a;--err:#ff8a9a;--errbg:#3a1a20;--ok:#7fd99a;--okbg:#14301f;--bd:#9aa1ab;--soft:#3a3f47;--card:#1c1f24;--focus:#fff;color-scheme:dark}
+:root[data-font="read"]{--ff:Verdana,Tahoma,sans-serif;--ls:.02em}
+*,*::before,*::after{box-sizing:inherit}
+html{font-size:var(--fs);scroll-padding-top:calc(env(safe-area-inset-top,0px) + 5rem)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--ff);line-height:var(--lh);letter-spacing:var(--ls);font-size:1rem;overflow-wrap:anywhere}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+h1,h2,h3{font-family:var(--hf);line-height:1.25;margin:0 0 .6rem}
+h1{font-size:1.9rem}h2{font-size:1.4rem;margin-top:1.8rem}h3{font-size:1.15rem}
+p{margin:.5rem 0;max-width:70ch}
+a{color:var(--pri)}
+.skip{position:absolute;left:.5rem;top:-4rem;background:var(--pri);color:var(--prif);padding:.8rem 1rem;z-index:30;font-weight:700;border-radius:6px}
+.skip:focus{top:calc(env(safe-area-inset-top,0px) + .5rem)}
+header.top{border-bottom:2px solid var(--soft);padding:.7rem 1rem;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between}
+.brand{font-family:var(--hf);font-weight:700;font-size:1.2rem}
+.wrap{max-width:60rem;margin:0 auto;padding:1rem}
+nav.crumbs ol{list-style:none;display:flex;flex-wrap:wrap;gap:.3rem;padding:0;margin:0 0 1rem}
+nav.crumbs li+li::before{content:"›";margin-right:.3rem}
+.btn{font:inherit;font-weight:700;min-height:44px;min-width:44px;padding:.6rem 1.1rem;border-radius:8px;border:2px solid var(--pri);cursor:pointer;background:transparent;color:var(--pri);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:.4rem}
+.btn.p{background:var(--pri);color:var(--prif)}
+.btn:hover{text-decoration:underline;filter:brightness(1.1)}
+.btn:active{transform:translateY(1px)}
+.btn[aria-disabled="true"]{border-style:dashed;opacity:.75;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.2rem}
+.card{background:var(--card);border:2px solid var(--soft);border-radius:10px;padding:1rem;margin:.8rem 0}
+.mods{list-style:none;padding:0;margin:0}
+.mods .card:hover{border-color:var(--pri)}
+.mods .card:focus-within{outline:3px solid var(--focus);outline-offset:2px}
+.badge{display:inline-flex;gap:.35rem;align-items:center;border:2px solid var(--bd);border-radius:999px;padding:.1rem .7rem;font-weight:700;font-size:.9rem;background:var(--bg)}
+.badge.ok{border-color:var(--ok);color:var(--ok)}.badge.warn{border-color:var(--err);color:var(--err)}.badge.draft{border-color:var(--pri);color:var(--pri)}
+.meta{color:var(--mut);font-size:.95rem}
+.resume{border-left:6px solid var(--pri);padding-left:1rem}
+.media{border:2px solid var(--bd);border-radius:10px;overflow:hidden;margin:1rem 0}
+.screen{background:#14213d;color:#fff;min-height:9rem;display:flex;align-items:center;justify-content:center;padding:1rem;text-align:center}
+.ctrl{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;padding:.6rem;background:var(--card)}
+details{border:2px solid var(--soft);border-radius:8px;padding:.5rem .9rem;margin:.6rem 0}
+summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
+fieldset{border:2px solid var(--soft);border-radius:8px;margin:1rem 0;padding:.8rem 1rem}
+legend{font-weight:700;padding:0 .4rem}
+label{font-weight:700;display:block;margin:.8rem 0 .3rem}
+.opt{display:flex;gap:.6rem;align-items:center;min-height:44px;font-weight:400;margin:0}
+input[type=radio],input[type=checkbox]{width:1.4rem;height:1.4rem;accent-color:var(--pri)}
+textarea,input[type=text],select{font:inherit;width:100%;border:2px solid var(--bd);border-radius:8px;padding:.7rem;background:var(--bg);color:var(--fg)}
+textarea{min-height:11rem;resize:vertical}
+[aria-invalid="true"]{border-color:var(--err);border-width:3px}
+.err{color:var(--err);font-weight:700;margin:.3rem 0}
+.errsum{background:var(--errbg);border:3px solid var(--err);border-radius:8px;padding:.8rem 1rem;margin:1rem 0}
+.note{border:2px solid var(--ok);background:var(--okbg);border-radius:8px;padding:.8rem 1rem;margin:1rem 0}
+.note.bad{border-color:var(--err);background:var(--errbg)}
+.stat{min-height:1.6rem;font-weight:700}
+table{border-collapse:collapse;width:100%}th,td{border:2px solid var(--soft);padding:.5rem;text-align:left;vertical-align:top}
+.score{font-family:var(--hf);font-size:2rem;font-weight:700}
+dialog{background:var(--bg);color:var(--fg);border:3px solid var(--pri);border-radius:12px;max-width:min(42rem,calc(100% - 1.5rem));width:100%;max-height:calc(100% - 2rem);padding:1.2rem}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+#prefs{margin-left:auto;margin-right:0}
+.preview{white-space:pre-wrap;border:2px solid var(--soft);border-radius:8px;padding:.8rem;max-height:40vh;overflow:auto}
+footer{border-top:2px solid var(--soft);padding:1rem;margin-top:2rem}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:40rem){.row>.btn{width:100%}
+ table.rf,table.rf tbody,table.rf tr,table.rf td{display:block;width:100%}table.rf thead{position:absolute;left:-9999px}table.rf tr{border:2px solid var(--soft);border-radius:8px;margin:.5rem 0;padding:.3rem}table.rf td{border:0}table.rf td::before{content:attr(data-l) ": ";font-weight:700}
+ dialog#prefsd{max-width:100%;height:100%;max-height:100%;border-radius:0}}
+@media (prefers-reduced-motion:no-preference){:root:not([data-motion="reduce"]) .btn,:root:not([data-motion="reduce"]) .card{transition:border-color .2s,background .2s}}
+html{scroll-padding-bottom:6rem}
+.fig{margin:1rem 0}.fig figcaption{font-weight:700;margin-top:.4rem}
+.hint{border:2px dashed var(--bd);border-radius:8px;padding:.1rem .9rem;margin:1rem 0}
+.cap{padding:.5rem .8rem;background:#000;color:#fff;margin:0}
+@media (forced-colors:active){:focus-visible{outline:3px solid Highlight}.badge,.card,.media{border-color:CanvasText}}
+.note>:first-child::before{content:"✓ ";content:"✓ " / "";font-weight:700}.note.bad>:first-child::before{content:"✕ ";content:"✕ " / ""}.note.info{border-color:var(--bd);background:var(--card)}.note.info>:first-child::before{content:"ℹ ";content:"ℹ " / ""}
+.errsum strong::before{content:"✕ ";content:"✕ " / ""}
+:root[data-contrast="high"]{--bg:#fff;--fg:#000;--mut:#000;--pri:#003a99;--prif:#fff;--err:#8a0017;--ok:#0a4a1a;--bd:#000;--soft:#000;--card:#fff;--errbg:#fff;--okbg:#fff;--focus:#000}
+@media (prefers-color-scheme:dark){:root[data-contrast="high"]:not([data-theme="light"]){--bg:#000;--fg:#fff;--mut:#fff;--pri:#a9c8ff;--prif:#000;--err:#ffb3be;--ok:#9ff0b6;--bd:#fff;--soft:#fff;--card:#000;--errbg:#000;--okbg:#000;--focus:#ff0}}
+:root[data-contrast="high"][data-theme="dark"]{--bg:#000;--fg:#fff;--mut:#fff;--pri:#a9c8ff;--prif:#000;--err:#ffb3be;--ok:#9ff0b6;--bd:#fff;--soft:#fff;--card:#000;--errbg:#000;--okbg:#000;--focus:#ff0}
+:root[data-contrast="high"] .card,:root[data-contrast="high"] .badge,:root[data-contrast="high"] .btn,:root[data-contrast="high"] .note{border-width:3px}:root[data-contrast="high"] a{text-decoration-thickness:2px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main" id="skip">Перейти до основного змісту</a>
+<header class="top" role="banner">
+  <span class="brand">Відкрите навчання</span>
+  <button class="btn" id="prefs" aria-haspopup="dialog" aria-expanded="false" aria-controls="prefsd">⚙ Налаштування вигляду</button>
+</header>
+<div class="wrap">
+  <nav class="crumbs" aria-label="Хлібні крихти"><ol id="crumbs"></ol></nav>
+  <main id="main" tabindex="-1"></main>
+</div>
+<footer role="contentinfo"><h2 style="font-size:1.1rem;margin-top:0">Допомога</h2><p>Потрібна допомога? <a href="mailto:support@example.org">support@example.org</a> — відповідаємо протягом доби.</p><p><a id="bar" href="mailto:support@example.org">Повідомити про бар’єр доступності</a>. Лист міститиме назву й адресу сторінки.</p><p><button class="btn" id="wb">Відповідність WCAG 2.2</button></p><p class="meta">Прототип: дані умовні. Ціль — WCAG 2.2 рівня AA; відповідність аудитом не підтверджено.</p></footer>
+<dialog id="wd" aria-labelledby="wh"><h2 id="wh" tabindex="-1" style="margin-top:0">Відповідність WCAG 2.2: що закладено у прототипі</h2><p class="meta">Це опис проєктних рішень, а не підтвердження відповідності: потрібні аудит із допоміжними технологіями та перевірка з користувачами. «Авторський орієнтир» означає рішення суворіше за мінімум стандарту.</p><p class="meta">Імітація колірного зору доступна кожному користувачеві в «Налаштуваннях вигляду».</p><table class="rf"><thead><tr><th scope="col">Критерій</th><th scope="col">Рішення</th><th scope="col">Статус</th></tr></thead><tbody id="wtb"></tbody></table><div class="row"><button class="btn p" id="wc">Закрити</button></div></dialog>
+<div class="vh" role="status" aria-live="polite" id="live"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="f-prot" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".567 .433 0 0 0 .558 .442 0 0 0 0 .242 .758 0 0 0 0 0 1 0"/></filter><filter id="f-deut" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".625 .375 0 0 0 .7 .3 0 0 0 0 .3 .7 0 0 0 0 0 1 0"/></filter><filter id="f-trit" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".95 .05 0 0 0 0 .433 .567 0 0 0 .475 .525 0 0 0 0 0 1 0"/></filter><filter id="f-gray" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".299 .587 .114 0 0 .299 .587 .114 0 0 .299 .587 .114 0 0 0 0 0 1 0"/></filter></svg>
+
+<dialog id="prefsd" aria-labelledby="prefsh">
+  <h2 id="prefsh" tabindex="-1" style="margin-top:0">Налаштування вигляду</h2>
+  <label for="s-size">Розмір тексту</label>
+  <select id="s-size"><option value="100">100%</option><option value="125">125%</option><option value="150">150%</option><option value="200">200%</option></select>
+  <label for="s-lh">Міжрядковий інтервал</label>
+  <select id="s-lh"><option value="1.6">Звичайний</option><option value="2">Збільшений</option></select>
+  <label for="s-font">Шрифт</label>
+  <select id="s-font"><option value="std">Стандартний</option><option value="read">Підвищеної розбірливості</option></select>
+  <label for="s-theme">Тема</label>
+  <select id="s-theme"><option value="system">Як у системі</option><option value="light">Світла</option><option value="dark">Темна</option></select>
+  <label class="opt" style="margin-top:.8rem"><input type="checkbox" id="s-motion"> Зменшити рух</label><label for="s-sim">Імітація кольорового зору</label><select id="s-sim" aria-describedby="sim-d"><option value="">Без імітації</option><option value="prot">Протанопія (слабке сприйняття червоного)</option><option value="deut">Дейтеранопія (слабке сприйняття зеленого)</option><option value="trit">Тританопія (слабке сприйняття синього)</option><option value="gray">Ахроматопсія (сірі тони)</option></select><p class="meta" id="sim-d">Це перегляд, а не виправлення кольорів. Він допомагає перевірити власну відповідь, схему чи графік і зрозуміти, як матеріал бачать інші. Вимкнути можна тут або кнопкою «Повернути початкові».</p><label class="opt"><input type="checkbox" id="s-hc"> Підвищити контраст</label><label class="opt"><input type="checkbox" id="s-tr"> Показувати текстову версію медіа одразу</label><p class="meta">Зберігаємо лише вигляд: тему, розмір тексту, інтервал і шрифт. Жодних даних про здоров’я чи поведінку.</p><p class="stat" id="pst" role="status">Зміни діють лише в цьому сеансі.</p>
+  <div class="row"><button class="btn p" id="prefs-save">Зберегти на майбутнє</button><button class="btn" id="prefs-undo">Скасувати зміни</button><button class="btn" id="prefs-reset">Повернути початкові</button><button class="btn" id="prefs-close">Закрити</button></div>
+</dialog>
+
+<dialog id="prevd" aria-labelledby="prevh">
+  <h2 id="prevh" tabindex="-1" style="margin-top:0">Перевірте відповідь перед поданням</h2>
+  <p class="meta">Після подання змінити цю версію не можна. Ви зможете подати нову версію, якщо викладач попросить доопрацювати.</p>
+  <h3>Ваша відповідь</h3>
+  <div class="preview" id="prevbody"></div>
+  <div class="row rev"><button class="btn p" id="prev-ok">Подати відповідь</button><button class="btn" id="prev-back">Повернутися до редагування</button></div>
+</dialog>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const MIN=30;
+const S={status:'revise',draft:'',mode:'text',fileName:'',seen:3,
+ versions:[{n:1,date:'18 жовтня 2026, 10:15',text:'Фотосинтез — це процес, у якому рослини перетворюють світло на енергію. Він відбувається в хлоропластах і має дві фази: світлову та темнову. Світлова фаза потребує сонячного світла, а темнова — вуглекислого газу.',res:'Оцінено: 8 з 12'}]};
+const T='Як рослини отримують енергію';
+// ---- settings
+const def={size:'100',lh:'1.6',font:'std',theme:'system',motion:matchMedia('(prefers-reduced-motion:reduce)').matches,tr:true,hc:matchMedia('(prefers-contrast:more)').matches,sim:''};
+let P=Object.assign({},def),SAVED=null;
+try{Object.assign(P,JSON.parse(localStorage.getItem('vn-prefs')||'{}'))}catch(e){}
+SAVED=Object.assign({},P);
+function applyP(){const r=document.documentElement;r.style.setProperty('--fs',P.size+'%');r.style.setProperty('--lh',P.lh);
+ r.dataset.font=P.font;P.theme==='system'?r.removeAttribute('data-theme'):r.dataset.theme=P.theme;
+ P.motion?r.dataset.motion='reduce':r.removeAttribute('data-motion');
+ $('#s-size').value=P.size;$('#s-lh').value=P.lh;$('#s-font').value=P.font;$('#s-theme').value=P.theme;$('#s-motion').checked=P.motion;
+ r.style.filter=P.sim?'url(#f-'+P.sim+')':'';$('#s-sim').value=P.sim||'';P.hc?r.dataset.contrast='high':r.removeAttribute('data-contrast');$('#s-hc').checked=P.hc;$('#s-tr').checked=P.tr;document.querySelectorAll('details.tr').forEach(d=>d.open=P.tr)}
+function say(t){const l=$('#live');l.textContent='';setTimeout(()=>l.textContent=t,50)}
+const pd=$('#prefsd');
+$('#prefs').onclick=()=>{pd.showModal();$('#prefs').setAttribute('aria-expanded','true');$('#prefsh').focus()};pd.addEventListener('close',()=>$('#prefs').setAttribute('aria-expanded','false'));
+$('#prefs-close').onclick=()=>pd.close();
+const pst=m=>{$('#pst').textContent=m},note='Зміни діють лише в цьому сеансі. Щоб залишити їх, натисніть «Зберегти на майбутнє».';
+$('#prefs-reset').onclick=()=>{P=Object.assign({},def);applyP();pst('Повернуто початкові налаштування. '+note)};
+$('#prefs-undo').onclick=()=>{P=Object.assign({},SAVED);applyP();pst('Зміни скасовано.')};
+$('#prefs-save').onclick=()=>{try{localStorage.setItem('vn-prefs',JSON.stringify(P));SAVED=Object.assign({},P);pst('Збережено на цьому пристрої для наступних входів.')}catch(e){pst('Не вдалося зберегти. Налаштування діють лише в цьому сеансі.')}};
+[['size','#s-size'],['lh','#s-lh'],['font','#s-font'],['theme','#s-theme']].forEach(([k,id])=>$(id).onchange=e=>{P[k]=e.target.value;applyP();pst(note)});
+$('#s-motion').onchange=e=>{P.motion=e.target.checked;applyP();pst(note)};$('#s-tr').onchange=e=>{P.tr=e.target.checked;applyP();pst(note)};$('#s-hc').onchange=e=>{P.hc=e.target.checked;applyP();pst(note)};$('#s-sim').onchange=e=>{P.sim=e.target.value;applyP();pst(P.sim?'Увімкнено перегляд з імітацією колірного зору. '+note:'Імітацію вимкнено.')};
+// ---- helpers
+const B=(c,i,t)=>`<span class="badge ${c}"><span aria-hidden="true">${i}</span> ${t}</span>`;
+function st(){return {revise:B('warn','↻','Потрібне доопрацювання'),draft:B('draft','✎','Збережено чернетку'),submitted:B('ok','✓','Відповідь подано'),none:B('','○','Не розпочато')}[S.status]}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const words=t=>(t.trim().match(/\S+/g)||[]).length;
+function media(kind,label,tr){return `<div class="media"><div class="screen" aria-hidden="true">${kind==='v'?'▶ Відеолекція: '+label:'♪ Аудіо: '+label}</div>
+<div class="ctrl"><button class="btn mp">Відтворити</button><label class="opt"><input type="checkbox" class="cc" checked> Субтитри</label><span class="meta">Автовідтворення вимкнено</span></div>
+<p class="cap" aria-hidden="true">Субтитри: «${tr.replace(/<[^>]+>/g,'').split('.')[0]}.»</p><details class="tr" ${P.tr?'open':''}><summary>Текстова версія (транскрипт)</summary>${tr}${kind==='v'?'<p><strong>Опис візуального ряду.</strong> На екрані схема листка у розрізі зі стрілками «світло», «вода», «вуглекислий газ». Стрілка «кисень» виходить назовні.</p>':''}<p class="meta">Текстову версію оновлено 20 жовтня 2026: вона відповідає поточній версії заняття.</p></details></div>`}
+// ---- views
+const V={
+course(){return {t:'Курс',h:`<h1 tabindex="-1">Біологія клітини: основи життя</h1>
+<p>Мета курсу: зрозуміти, як клітини отримують і використовують енергію, та вміти пояснити це письмово.</p>
+<div class="card resume"><p><strong>Пройдено 1 з 4 модулів.</strong> Ви зупинилися на темі 2 «${T}».${S.draft?' Остання дія: чернетку збережено.':''}</p><a class="btn p" href="${S.draft?'#form':'#material'}">${S.draft?'Продовжити відповідь до теми 2':'Продовжити тему 2'}</a></div><p class="meta">Рекомендація (необов’язкова): перед відповіддю перегляньте відео в розділі 1. Порядок модулів не змінюється.</p>
+<h2>Модулі</h2><ol class="mods">
+<li class="card"><h3><a href="#result">Модуль 1. Будова клітини</a></h3><p>${B('ok','★','Оцінено')}</p><p class="meta">Завершено 10 жовтня 2026</p></li>
+<li class="card"><h3><a href="#material">Модуль 2. ${T}</a></h3><p>${st()}</p><p class="meta">Дедлайн: 12 листопада 2026</p></li>
+<li class="card"><h3>Модуль 3. Дихання клітини</h3><p>${B('','○','Не розпочато')}</p><p class="meta">Відкриється після Модуля 2</p></li>
+<li class="card"><h3>Модуль 4. Поділ клітини</h3><p>${B('','○','Не розпочато')}</p><p class="meta">Відкриється після Модуля 3</p></li></ol>`}},
+material(){return {t:'Матеріал',h:`<h1 tabindex="-1">${T}</h1>
+<div class="card"><h2 style="margin-top:0">Очікуваний результат</h2><p>Після теми ви зможете пояснити, що відбувається у двох фазах фотосинтезу, та описати, де вони проходять.</p></div>
+<details><summary>Зміст розділів</summary><ul><li><button class="btn sec" data-s="1">1. Вступ</button></li><li><button class="btn sec" data-s="2">2. Хлоропласти</button></li><li><button class="btn sec" data-s="3">3. Світлова фаза</button></li><li><button class="btn sec" data-s="4">4. Темнова фаза</button></li></ul></details>
+<div class="card resume" id="resume"><p>Ви зупинилися на розділі <strong id="seen">${S.seen}</strong>.</p><button class="btn" id="back-sec">Повернутися до розділу ${S.seen}</button></div>
+<div class="hint"><p>Для цього матеріалу доступна текстова версія: вона розміщена під кожним відео та аудіо. Користуйтеся тим форматом, який вам зручний.</p></div><h2 id="sec1" tabindex="-1">1. Вступ</h2><p>Майже вся енергія живих систем походить від Сонця. Рослини вловлюють її та накопичують у хімічних зв’язках.</p>
+${media('v','Знайомство з фотосинтезом','<p>Ведуча показує листок під мікроскопом і пояснює, що зелений колір дає хлорофіл. Далі вона малює схему: світло, вода та вуглекислий газ на вході, глюкоза й кисень на виході.</p>')}
+<h2 id="sec2" tabindex="-1">2. Хлоропласти</h2><p>Хлоропласти — органели, що містять хлорофіл. Усередині є стопки мембран, у яких проходить світлова фаза.</p>
+<h2 id="sec3" tabindex="-1">3. Світлова фаза</h2><p>Світло збуджує електрони хлорофілу. Енергія записується у молекулах АТФ, а вода розщеплюється з виділенням кисню.</p>
+${media('a','Пояснення світлової фази','<p>Диктор послідовно описує три кроки: поглинання світла, рух електронів, утворення АТФ. Наприкінці він підсумовує, що кисень є побічним продуктом.</p>')}
+<h2 id="sec4" tabindex="-1">4. Темнова фаза</h2><p>У стромі хлоропласта АТФ допомагає зв’язати вуглекислий газ у глюкозу.</p>
+<figure class="fig"><svg role="img" aria-labelledby="g1t g1d" viewBox="0 0 300 150" width="100%" style="max-width:420px;border:2px solid var(--bd);border-radius:8px"><title id="g1t">Графік: швидкість фотосинтезу залежно від освітленості</title><desc id="g1d">Дві лінії. Звичайний рівень CO₂ (суцільна лінія, круглі маркери): швидкість росте до освітленості 60 відсотків і виходить на плато близько 10. Підвищений рівень CO₂ (штрихова лінія, квадратні маркери): росте далі й виходить на плато близько 14.</desc><polyline points="20,130 80,100 140,70 200,55 280,51" fill="none" stroke="currentColor" stroke-width="3"/><polyline points="20,130 80,92 140,55 200,32 280,25" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="7 4"/><g fill="currentColor"><circle cx="80" cy="100" r="4"/><circle cx="140" cy="70" r="4"/><circle cx="200" cy="55" r="4"/><circle cx="280" cy="51" r="4"/><rect x="76" y="88" width="8" height="8"/><rect x="136" y="51" width="8" height="8"/><rect x="196" y="28" width="8" height="8"/><rect x="276" y="21" width="8" height="8"/><text x="165" y="98" font-size="9">Звичайний CO₂ (суцільна, ●)</text><text x="30" y="16" font-size="9">Підвищений CO₂ (штрихова, ■)</text></g><line x1="20" y1="130" x2="285" y2="130" stroke="currentColor" stroke-width="2"/><line x1="20" y1="15" x2="20" y2="130" stroke="currentColor" stroke-width="2"/></svg><figcaption>Рис. 1. Швидкість фотосинтезу залежно від освітленості за двох рівнів CO₂. Лінії відрізняються штрихом і маркерами, а не кольором</figcaption>
+<details><summary>Опис і дані графіка</summary><p>Тенденція: швидкість росте разом зі світлом, потім виходить на плато, бо обмежувальним стає вуглекислий газ.</p><table role="table"><caption>Освітленість і швидкість фотосинтезу</caption><thead><tr><th scope="col">Освітленість, %</th><th scope="col">Звичайний CO₂</th><th scope="col">Підвищений CO₂</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td></tr><tr><td>20</td><td>4</td><td>5</td></tr><tr><td>40</td><td>8</td><td>10</td></tr><tr><td>60</td><td>10</td><td>13</td></tr><tr><td>100</td><td>10,5</td><td>14</td></tr></tbody></table></details></figure>
+<div class="row"><a class="btn p" href="#form">Перейти до відповіді</a></div>`}},
+form(){const rv=S.status==='revise',pv=S.versions[S.versions.length-1];
+ if(rv&&!S.draft)S.draft=pv.text;
+ return {t:'Форма відповіді',h:`<h1 tabindex="-1">Відповідь: ${T}</h1>
+${rv?`<div class="note info"><strong>Доопрацювання.</strong> Тему відповіді змінювати не можна. Ви можете виправити текст, додати приклади й оновити висновки.</div>`:''}
+<div class="card"><h2 style="margin-top:0">Інструкції</h2><ol><li>Поясніть, як рослини перетворюють світло на енергію.</li><li>Опишіть обидві фази фотосинтезу.</li><li>Наведіть хоча б один приклад.</li></ol></div>
+<div class="card"><h2 style="margin-top:0">Критерії оцінювання</h2><ul><li>Точність понять — до 4 балів</li><li>Повнота пояснення — до 4 балів</li><li>Приклади та структура — до 4 балів</li></ul></div>
+<div id="errsum" tabindex="-1"></div>
+<form id="f" novalidate>
+<fieldset><legend>Як ви хочете надати відповідь?</legend>
+<label class="opt"><input type="radio" name="m" value="text" ${S.mode==='text'?'checked':''}> Ввести текст</label>
+<label class="opt"><input type="radio" name="m" value="file" ${S.mode==='file'?'checked':''}> Завантажити файл</label></fieldset>
+<div id="pt" ${S.mode==='text'?'':'hidden'}><label for="ta">Ваша відповідь</label>
+<textarea id="ta" aria-describedby="cnt">${esc(S.draft)}</textarea><p class="meta" id="cnt"></p><div id="e-ta"></div></div>
+<div id="pf" ${S.mode==='file'?'':'hidden'}><p id="fi" class="meta">Допустимі формати: PDF, DOCX, TXT. Розмір: до 10 МБ.</p>
+<label for="fl">Файл відповіді</label><input type="file" id="fl" aria-describedby="fi"><p id="fn" class="stat">${S.fileName?'Обрано: '+esc(S.fileName):''}</p><div id="e-fl"></div></div>
+<label class="opt"><input type="checkbox" id="off"> Імітувати втрату з’єднання (для демонстрації)</label>
+<p class="stat" id="sv" role="status" aria-live="polite">${S.draft?'Чернетку збережено':'Змін ще немає'}</p>
+<div class="row rev"><button type="submit" class="btn p">Перевірити та подати</button><button type="button" class="btn" id="sd">Зберегти чернетку</button></div></form>
+<div id="msg" role="alert"></div>`}},
+result(){const done=S.status==='submitted',v=S.versions,l=v[0];
+ return {t:'Результат',h:`<h1 tabindex="-1">Результат: ${T}</h1>
+${done?`<div class="note" role="status"><strong>Версію ${v.length} подано.</strong> Викладач перегляне її протягом 5 днів. Нижче — відгук на попередню версію.</div>`:''}
+<div class="card"><p class="meta">Версія 1 · ${l.date}</p><p class="score">${l.res}</p><p>${done?B('ok','✓','Нова версія очікує перевірки'):B('warn','↻','Потрібне доопрацювання до 12 листопада 2026')}</p></div>
+<h2>Відгук викладача</h2><p>Ви правильно назвали дві фази й місце їх проходження. Щоб підвищити оцінку, поясніть, що саме відбувається з водою у світловій фазі, і додайте приклад зі своїх спостережень. Висновок краще сформулювати двома-трьома реченнями.</p>
+${media('a','Аудіокоментар викладача','<p>Викладач повторює письмовий відгук і додає: «Ви на правильному шляху. Зверніть увагу на роль води та спробуйте навести приклад із життя».</p>')}
+<h2>Оцінка за критеріями</h2><table class="rf"><thead><tr><th scope="col">Критерій</th><th scope="col">Бали</th><th scope="col">Коментар</th></tr></thead><tbody>
+<tr><td data-l="Критерій">Точність понять</td><td data-l="Бали">3 з 4</td><td data-l="Коментар">Уточніть, де утворюється кисень.</td></tr>
+<tr><td data-l="Критерій">Повнота пояснення</td><td data-l="Бали">3 з 4</td><td data-l="Коментар">Не описано роль води.</td></tr>
+<tr><td data-l="Критерій">Приклади та структура</td><td data-l="Бали">2 з 4</td><td data-l="Коментар">Немає прикладу.</td></tr></tbody></table>
+${S.status==='revise'?'<div class="row"><a class="btn p" href="#form">Доопрацювати відповідь</a></div>':''}
+<h2>Історія ваших версій</h2><ol reversed>${v.slice().reverse().map(x=>`<li class="card"><strong>Версія ${x.n}</strong> · ${x.date} · ${x.res||'Очікує перевірки'}${x.n===v.length?' (поточна)':''}<details><summary>Переглянути версію ${x.n}</summary><p>${esc(x.text)}</p></details></li>`).join('')}</ol>`}}
+};
+// ---- router
+const names={course:'Курс',material:'Матеріал',form:'Форма відповіді',result:'Результат'};
+let first=true;
+function go(){let k=(location.hash||'#course').slice(1);if(!V[k])k='course';
+ const r=V[k]();$('#main').innerHTML=r.h;
+ const c=[['course','Курс'],['material','Модуль 2'],['form','Форма'],['result','Результат']];
+ const idx={course:0,material:1,form:2,result:3}[k];
+ $('#crumbs').innerHTML=(k==='course'?[c[0]]:k==='result'?[c[0],c[3]]:c.slice(0,idx+1)).map((x,i,a)=>i===a.length-1?`<li><span aria-current="page">${x[1]}</span></li>`:`<li><a href="#${x[0]}">${x[1]}</a></li>`).join('');
+ document.title=r.t+' — Модуль 2 — Біологія клітини';$('#bar').href='mailto:support@example.org?subject='+encodeURIComponent('Бар’єр доступності: '+r.t)+'&body='+encodeURIComponent('Сторінка: '+document.title)+'%0A'+encodeURIComponent('Адреса: '+location.href)+'%0A'+encodeURIComponent('Опишіть, що саме не вдалося зробити:');
+ if(!first){const h=$('#main h1');h.focus();window.scrollTo(0,0)}first=false;
+ say('Відкрито: '+r.t);
+ if(k==='material')bindMat();if(k==='form')bindForm();bindMedia();}
+function fixT(){document.querySelectorAll('table.rf').forEach(t=>{t.setAttribute('role','table');t.querySelectorAll('thead,tbody').forEach(x=>x.setAttribute('role','rowgroup'));t.querySelectorAll('tr').forEach(x=>x.setAttribute('role','row'));t.querySelectorAll('th').forEach(x=>x.setAttribute('role','columnheader'));t.querySelectorAll('td').forEach(x=>x.setAttribute('role','cell'))})}
+function bindMedia(){fixT();document.querySelectorAll('.mp').forEach(b=>b.onclick=()=>{const on=b.textContent==='Відтворити';b.textContent=on?'Пауза':'Відтворити';say(on?'Відтворення':'Пауза')});document.querySelectorAll('.cc').forEach(c=>c.onchange=()=>{c.closest('.media').querySelector('.cap').hidden=!c.checked})}
+function bindMat(){const go=n=>{S.seen=n;const e=$('#sec'+n);e.scrollIntoView({behavior:P.motion?'auto':'smooth'});e.focus();$('#seen').textContent=n;$('#back-sec').textContent='Повернутися до розділу '+n};
+ document.querySelectorAll('.sec').forEach(b=>b.onclick=()=>go(+b.dataset.s));$('#back-sec').onclick=()=>go(S.seen)}
+function bindForm(){
+ const ta=$('#ta'),f=$('#f');let dirty=false,t;
+ const cnt=()=>{const n=words(ta.value);$('#cnt').textContent=`${n} слів; мінімум ${MIN}`};cnt();
+ const time=()=>new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+ function save(){if(S.mode==='text')S.draft=ta.value;if(S.status!=='revise')S.status='draft';dirty=false;$('#sv').textContent='Чернетку збережено о '+time()}
+ ta.oninput=()=>{dirty=true;$('#sv').textContent='Є зміни, які ще не збережено';clearTimeout(t);t=setTimeout(cnt,600)};
+ ta.onblur=()=>{if(dirty)save()};
+ const iv=setInterval(()=>{if(!document.body.contains(ta)){clearInterval(iv);return}if(dirty)save()},30000);
+ $('#sd').onclick=()=>{save();cnt()};
+ f.querySelectorAll('[name=m]').forEach(r=>r.onchange=()=>{S.mode=r.value;if(r.checked){$('#pt').hidden=r.value!=='text';$('#pf').hidden=r.value!=='file'}});
+ $('#fl').onchange=e=>{const x=e.target.files[0];$('#e-fl').innerHTML='';e.target.removeAttribute('aria-invalid');if(!x)return;
+  const ext=x.name.split('.').pop().toLowerCase();
+  if(!['pdf','docx','txt'].includes(ext)){e.target.value='';S.fileName='';$('#fn').textContent='';e.target.setAttribute('aria-invalid','true');$('#e-fl').innerHTML=`<p class="err" id="ef">✕ Файл «${esc(x.name)}» не додано: формат ${esc(ext.toUpperCase())} не підтримується. Оберіть PDF, DOCX або TXT.</p>`;e.target.setAttribute('aria-describedby','fi ef');return}
+  if(x.size>10*1048576){e.target.value='';S.fileName='';$('#fn').textContent='';e.target.setAttribute('aria-invalid','true');$('#e-fl').innerHTML=`<p class="err" id="ef">✕ Файл «${esc(x.name)}» не додано: він більший за 10 МБ (зараз ${(x.size/1048576).toFixed(0)} МБ). Стисніть файл або оберіть інший.</p>`;e.target.setAttribute('aria-describedby','fi ef');return}
+  S.fileName=x.name;$('#fn').textContent='✓ Обрано: '+x.name+' ('+Math.max(1,Math.round(x.size/1024))+' КБ)'};
+ f.onsubmit=e=>{e.preventDefault();$('#msg').innerHTML='';const errs=[];
+  ta.removeAttribute('aria-invalid');$('#e-ta').innerHTML='';
+  if(S.mode==='text'){const n=words(ta.value);
+   if(n===0)errs.push(['ta','Поле «Ваша відповідь» порожнє. Введіть текст або перейдіть до завантаження файлу.']);
+   else if(n<MIN)errs.push(['ta',`Відповідь має ${n} слів, потрібно щонайменше ${MIN}. Додайте ще приблизно ${MIN-n}.`])}
+  else if(!S.fileName)errs.push(['fl','Файл не обрано. Оберіть PDF, DOCX або TXT до 10 МБ.']);
+  const sum=$('#errsum');
+  if(errs.length){errs.forEach(([id,m])=>{const el=$('#'+id);el.setAttribute('aria-invalid','true');el.setAttribute('aria-describedby',(id==='ta'?'cnt ':'fi ')+'e-'+id+'t');$('#e-'+id).innerHTML=`<p class="err" id="e-${id}t">✕ ${m}</p>`});
+   sum.innerHTML=`<div class="errsum"><strong>Знайдено помилок: ${errs.length}. Виправте їх, щоб подати відповідь:</strong><ul>${errs.map(([id,m])=>`<li><a href="#" data-f="${id}">${id==='ta'?'Поле «Ваша відповідь»':'Файл'}</a></li>`).join('')}</ul></div>`;
+   sum.querySelectorAll('a').forEach(a=>a.onclick=ev=>{ev.preventDefault();$('#'+a.dataset.f).focus()});sum.focus();return}
+  sum.innerHTML='';save();
+  $('#prevbody').textContent=S.mode==='text'?ta.value:'Файл: '+S.fileName;
+  const d=$('#prevd');d.showModal();$('#prevh').focus()};
+}
+const pv=$('#prevd');
+$('#prev-back').onclick=()=>pv.close();
+$('#prev-ok').onclick=()=>{
+ if($('#off')&&$('#off').checked){pv.close();$('#msg').innerHTML='<div class="note bad"><p><strong>Не вдалося подати відповідь: немає з’єднання з інтернетом.</strong> Ваш текст збережено на цьому пристрої. Спробуйте ще раз, коли з’єднання відновиться.</p><button class="btn" id="retry">Спробувати ще раз</button> <button class="btn" id="cl">Закрити</button></div>';
+  $('#retry').onclick=()=>{$('#off').checked=false;$('#msg').innerHTML='';$('#f').requestSubmit()};$('#cl').onclick=()=>{$('#msg').innerHTML='';$('#off').focus()};$('#retry').focus();return}
+ const d=new Date().toLocaleDateString('uk-UA',{day:'numeric',month:'long',year:'numeric'})+', '+new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+ S.versions.push({n:S.versions.length+1,date:d,text:S.mode==='text'?S.draft:'Файл: '+S.fileName,res:''});
+ S.status='submitted';pv.close();location.hash='#result'};
+window.addEventListener('hashchange',go);
+const W=[['1.4.1','Колір ніколи не єдиний носій: статуси, помилки й повідомлення мають значок і текст; лінії графіка відрізняються штрихом, формою маркера та підписом','Реалізовано'],['1.4.6, 1.4.11','Режим «Підвищити контраст»: чорне на білому (або навпаки), рамки 3 px; вмикається автоматично за prefers-contrast','Реалізовано; понад рівень AA'],['1.4.1 (перегляд)','Імітація протанопії, дейтеранопії, тританопії та ахроматопсії в «Налаштуваннях вигляду» доступна кожному: показує, як сторінку бачать люди з іншим колірним зором','Реалізовано як перегляд; не є корекцією кольорів і не замінює перевірку з людьми'],['1.3.1, 2.4.2, 2.4.6','Один h1 на сторінку, регіони, ієрархія заголовків, унікальний title','Реалізовано'],['1.4.3, 1.4.11','Контраст тексту ≥ 4,5:1, рамок ≥ 3:1; статус завжди текстом','Виміряно для токенів обох тем: текст від 6,4:1, рамки й фокус від 4,4:1. На фінальному макеті повторити'],['1.4.4, 1.4.10, 1.4.12','Відносні одиниці, 320 px в одну колонку, таблиця стає списком карток, без фіксованої висоти тексту','Реалізовано; перевірити на 200–400%'],['1.1.1, 1.2.x','Графік має опис і таблицю даних; медіа мають субтитри, транскрипт, опис візуального ряду','Заглушки; реальні матеріали перевіряє людина'],['2.1.1, 2.4.3, 1.3.2','Усе доступне з клавіатури; порядок у DOM збігається з візуальним','Реалізовано'],['2.4.1','Посилання «Перейти до основного змісту»','Реалізовано'],['2.4.7, 2.4.11','Контур 3 px; липких елементів немає, є запас прокручування. Правило «основна дія завжди в полі зору» суворіше за AA','Реалізовано; правило — авторський орієнтир'],['2.5.8','Цілі 44 px; мінімум AA — 24 px','Авторський орієнтир'],['2.5.7, 3.3.8','Перетягування й автентифікації немає','Не застосовно'],['3.2.3, 3.2.6','Допомога та навігація стоять в однакових місцях','Реалізовано'],['3.3.1–3.3.4, 3.3.7','Помилка називає поле й спосіб виправлення; введене зберігається; перегляд перед поданням','Реалізовано'],['4.1.2, 4.1.3','Нативні елементи та dialog; статуси через live-області','Перевірити з NVDA, JAWS, VoiceOver'],['2.2.1, 2.3.3','Без обмежень часу; рух зменшується за налаштуванням ОС або користувача','Реалізовано']];
+$('#wb').onclick=()=>{$('#wtb').innerHTML=W.map(r=>`<tr><td data-l="Критерій">${r[0]}</td><td data-l="Рішення">${r[1]}</td><td data-l="Статус">${r[2]}</td></tr>`).join('');fixT();$('#wd').showModal();$('#wh').focus()};
+$('#wc').onclick=()=>$('#wd').close();
+
+$('#skip').onclick=e=>{e.preventDefault();$('#main').focus()};
+applyP();go();
+})();
+</script>
+</body>
+</html>
